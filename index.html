@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artizo — Trouve un artisan de confiance près de chez toi</title>
+<meta name="description" content="Artizo connecte les clients aux plombiers, coiffeuses, mécaniciens et autres artisans de confiance de ton quartier, directement sur WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ====================================================================
+     CONFIGURATION — à modifier par Richard avant la mise en ligne
+     ==================================================================== */
+  :root{
+    --whatsapp-number: "22500000000"; /* remplace par ton vrai numéro WhatsApp, format international sans + ni espace */
+    --ville: "Abidjan"; /* remplace par ta ville de lancement */
+
+    /* Palette */
+    --sable: #F5EFE3;
+    --sable-fonce: #EAE1CE;
+    --encre: #132A3A;
+    --encre-clair: #2B4A5E;
+    --or: #E8A33D;
+    --or-fonce: #C7842A;
+    --vert: #3D7A5C;
+    --argile: #9C3B2E;
+    --blanc: #FFFDF9;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin: 0;
+    background: var(--sable);
+    color: var(--encre);
+    font-family: 'Work Sans', sans-serif;
+    line-height: 1.55;
+  }
+  h1, h2, h3, .display{
+    font-family: 'Fraunces', serif;
+    color: var(--encre);
+    margin: 0;
+    line-height: 1.1;
+  }
+  a{ color: inherit; }
+  img{ max-width: 100%; display:block; }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 26px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform .15s ease, background .2s ease;
+  }
+  .btn:hover{ transform: translateY(-2px); }
+  .btn-or{ background: var(--or); color: var(--encre); }
+  .btn-or:hover{ background: var(--or-fonce); }
+  .btn-ligne{ background: transparent; border-color: var(--encre); color: var(--encre); }
+  .btn-ligne:hover{ background: var(--encre); color: var(--blanc); }
+
+  /* Header */
+  header{
+    position: sticky; top:0; z-index: 50;
+    background: var(--sable);
+    border-bottom: 1px solid var(--sable-fonce);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content: space-between;
+    padding: 18px 24px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .logo{ font-size: 1.4rem; font-weight: 600; letter-spacing: -0.01em; }
+  .logo span{ color: var(--vert); }
+  .nav-links{ display:flex; gap: 28px; list-style:none; margin:0; padding:0; font-weight: 500; }
+  .nav-links a{ text-decoration:none; }
+  .nav-links a:hover{ color: var(--vert); }
+  .nav-cta{ display:flex; }
+  .burger{ display:none; background:none; border:none; font-size:1.6rem; cursor:pointer; }
+
+  @media (max-width: 760px){
+    .nav-links{
+      position:absolute; top:100%; left:0; right:0;
+      background: var(--sable); flex-direction:column; gap:0;
+      max-height:0; overflow:hidden; border-bottom: 1px solid var(--sable-fonce);
+      transition: max-height .25s ease;
+    }
+    .nav-links.open{ max-height: 260px; }
+    .nav-links li{ padding: 14px 24px; border-top:1px solid var(--sable-fonce); }
+    .burger{ display:block; }
+    .nav-cta{ display:none; }
+  }
+
+  /* Hero */
+  .hero{ padding: 76px 0 90px; }
+  .hero-grid{ display:grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items:center; }
+  @media (max-width: 860px){ .hero-grid{ grid-template-columns: 1fr; } }
+  .kicker{ color: var(--vert); font-weight:600; margin-bottom: 14px; display:block; }
+  .hero h1{ font-size: clamp(2.2rem, 4.5vw, 3.4rem); font-weight: 600; }
+  .hero p.lead{ font-size: 1.15rem; color: var(--encre-clair); margin: 22px 0 30px; max-width: 46ch; }
+  .hero-actions{ display:flex; gap: 16px; flex-wrap: wrap; }
+
+  .hero-art{
+    background: var(--encre);
+    border-radius: 4px;
+    padding: 34px;
+    color: var(--sable);
+    position: relative;
+  }
+  .hero-art::before{
+    content:"";
+    position:absolute; top: -10px; right: -10px;
+    width: 56px; height: 56px;
+    background: var(--or);
+    border-radius: 4px;
+    z-index:-1;
+  }
+  .hero-art .stat{ font-family:'Fraunces', serif; font-size: 2.6rem; font-weight:700; color: var(--or); }
+  .hero-art .stat-label{ color: var(--sable-fonce); margin-top: 4px; }
+  .hero-art hr{ border:none; border-top:1px solid rgba(245,239,227,.2); margin: 22px 0; }
+
+  /* Sections communes */
+  section{ padding: 70px 0; }
+  .section-head{ max-width: 640px; margin-bottom: 44px; }
+  .section-head .kicker{ margin-bottom: 10px; }
+  .section-head h2{ font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 600; }
+  .section-head p{ color: var(--encre-clair); margin-top: 14px; }
+
+  /* Comment ça marche */
+  .comment-marche{ background: var(--blanc); }
+  .colonnes{ display:grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  @media (max-width: 760px){ .colonnes{ grid-template-columns: 1fr; } }
+  .colonne h3{ font-size: 1.3rem; font-weight:600; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 2px solid var(--sable-fonce); }
+  .etape{ display:flex; gap: 18px; margin-bottom: 26px; }
+  .etape .num{
+    flex: none; width: 34px; height:34px; border-radius: 50%;
+    background: var(--sable); color: var(--encre);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:600;
+  }
+  .colonne.artisan .etape .num{ background: var(--vert); color: var(--blanc); }
+  .etape p{ margin: 4px 0 0; color: var(--encre-clair); }
+  .etape strong{ display:block; color: var(--encre); }
+
+  /* Métiers */
+  .metiers-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--sable-fonce); border: 1px solid var(--sable-fonce); }
+  @media (max-width: 760px){ .metiers-grid{ grid-template-columns: repeat(2,1fr); } }
+  .metier{
+    background: var(--sable);
+    padding: 30px 22px;
+    min-height: 150px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .metier:nth-child(3n+2){ background: #F0E8D6; }
+  .metier .emoji{ font-size: 1.8rem; }
+  .metier h4{ font-family:'Fraunces', serif; font-size: 1.15rem; margin: 14px 0 4px; font-weight:600; }
+  .metier span{ color: var(--encre-clair); font-size: .92rem; }
+
+  /* Artisans en vedette */
+  .vedette{ background: var(--blanc); }
+  .cartes{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  @media (max-width: 860px){ .cartes{ grid-template-columns: 1fr; } }
+  .carte{
+    border: 1px solid var(--sable-fonce);
+    padding: 26px;
+    position: relative;
+  }
+  .carte:nth-child(2){ border-top: 4px solid var(--or); }
+  .carte:nth-child(1){ border-top: 4px solid var(--vert); }
+  .carte:nth-child(3){ border-top: 4px solid var(--argile); }
+  .carte .avatar{
+    width: 52px; height:52px; border-radius:50%;
+    background: var(--sable); display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:700; font-size:1.2rem; color: var(--encre);
+    margin-bottom: 16px;
+  }
+  .carte h4{ font-size:1.1rem; margin-bottom:2px; }
+  .carte .role{ color: var(--vert); font-weight:600; font-size:.9rem; margin-bottom:12px; }
+  .carte p.desc{ color: var(--encre-clair); font-size:.94rem; margin-bottom:18px; }
+  .carte .btn{ width:100%; justify-content:center; padding: 10px; font-size: .92rem; }
+
+  /* Devenir artisan */
+  .rejoindre{
+    background: var(--encre); color: var(--sable);
+  }
+  .rejoindre .section-head p{ color: #C3D0D8; }
+  .rejoindre .kicker{ color: var(--or); }
+  .rejoindre h2{ color: var(--blanc); }
+  .rejoindre-box{
+    background: rgba(245,239,227,.06);
+    border: 1px solid rgba(245,239,227,.16);
+    padding: 34px;
+    display:flex; justify-content: space-between; align-items:center; gap: 24px; flex-wrap: wrap;
+  }
+  .rejoindre-box p{ margin:0; max-width: 42ch; color: #DCE4E8; }
+
+  footer{ padding: 40px 0; border-top: 1px solid var(--sable-fonce); }
+  .footer-row{ display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap: 14px; color: var(--encre-clair); font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <div class="logo">Arti<span>zo</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#comment">Comment ça marche</a></li>
+      <li><a href="#metiers">Métiers</a></li>
+      <li><a href="#artisans">Artisans</a></li>
+      <li><a href="#rejoindre">Devenir artisan</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#artisans" class="btn btn-or">Trouver un artisan</a>
+    </div>
+    <button class="burger" id="burger" aria-label="Menu">☰</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">Annuaire local · réservation directe</span>
+      <h1>L'artisan de confiance de ton quartier, à un message de toi.</h1>
+      <p class="lead">Artizo réunit les meilleurs plombiers, coiffeuses, mécaniciens et traiteurs de ta ville. Compare, choisis, réserve — tout se passe sur WhatsApp, sans détour.</p>
+      <div class="hero-actions">
+        <a href="#artisans" class="btn btn-or">Trouver un artisan</a>
+        <a href="#rejoindre" class="btn btn-ligne">Je suis artisan</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="stat">0 FCFA</div>
+      <div class="stat-label">de frais d'inscription pour les artisans</div>
+      <hr>
+      <div class="stat">5 min</div>
+      <div class="stat-label">pour trouver et contacter un artisan</div>
+    </div>
+  </div>
+</section>
+
+<section class="comment-marche" id="comment">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Comment ça marche</span>
+      <h2>Deux façons simples de faire partie d'Artizo</h2>
+    </div>
+    <div class="colonnes">
+      <div class="colonne client">
+        <h3>Pour les clients</h3>
+        <div class="etape">
+          <div class="num">1</div>
+          <p><strong>Choisis un métier</strong>Parcours la liste des artisans vérifiés dans ta ville.</p>
+        </div>
+        <div class="etape">
+          <div class="num">2</div>
+          <p><strong>Compare</strong>Regarde les avis, les tarifs indicatifs et les disponibilités.</p>
+        </div>
+        <div class="etape">
+          <div class="num">3</div>
+          <p><strong>Réserve sur WhatsApp</strong>Un clic suffit pour discuter directement avec l'artisan.</p>
+        </div>
+      </div>
+      <div class="colonne artisan">
+        <h3>Pour les artisans</h3>
+        <div class="etape">
+          <div class="num">1</div>
+          <p><strong>Inscris-toi gratuitement</strong>Envoie ton métier, ta ville et une photo par WhatsApp.</p>
+        </div>
+        <div class="etape">
+          <div class="num">2</div>
+          <p><strong>Ta fiche est publiée</strong>Les clients de ta zone te découvrent dans l'annuaire.</p>
+        </div>
+        <div class="etape">
+          <div class="num">3</div>
+          <p><strong>Tu es payé directement</strong>Aucun frais tant que tu n'as pas de nouvelles réservations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="metiers">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Catégories</span>
+      <h2>Un artisan pour chaque besoin</h2>
+      <p>La liste s'agrandit chaque semaine avec de nouveaux métiers demandés par les habitants.</p>
+    </div>
+    <div class="metiers-grid">
+      <div class="metier"><span class="emoji">🔧</span><h4>Plomberie</h4><span>Fuites, installations, dépannage</span></div>
+      <div class="metier"><span class="emoji">💇</span><h4>Coiffure</h4><span>À domicile ou en salon</span></div>
+      <div class="metier"><span class="emoji">🔌</span><h4>Électricité</h4><span>Installation, panne, mise aux normes</span></div>
+      <div class="metier"><span class="emoji">🚗</span><h4>Mécanique</h4><span>Entretien et réparation auto/moto</span></div>
+      <div class="metier"><span class="emoji">🧵</span><h4>Couture</h4><span>Retouches, tenues sur mesure</span></div>
+      <div class="metier"><span class="emoji">🍲</span><h4>Traiteur</h4><span>Événements, plats à emporter</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="vedette" id="artisans">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Artisans en vedette</span>
+      <h2>Ils sont déjà sur Artizo</h2>
+      <p>Exemples de fiches — remplace-les par tes premiers artisans inscrits.</p>
+    </div>
+    <div class="cartes">
+      <div class="carte">
+        <div class="avatar">FK</div>
+        <h4>Fatou Koné</h4>
+        <div class="role">Coiffeuse à domicile</div>
+        <p class="desc">6 ans d'expérience, spécialiste tresses et soins naturels.</p>
+        <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/REMPLACE_PAR_LE_NUMERO?text=Bonjour%20Fatou%2C%20je%20vous%20contacte%20via%20Artizo">Contacter sur WhatsApp</a>
+      </div>
+      <div class="carte">
+        <div class="avatar">IS</div>
+        <h4>Ibrahim Sawadogo</h4>
+        <div class="role">Plombier</div>
+        <p class="desc">Interventions rapides, devis gratuit avant travaux.</p>
+        <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/REMPLACE_PAR_LE_NUMERO?text=Bonjour%20Ibrahim%2C%20je%20vous%20contacte%20via%20Artizo">Contacter sur WhatsApp</a>
+      </div>
+      <div class="carte">
+        <div class="avatar">AD</div>
+        <h4>Aïcha Diallo</h4>
+        <div class="role">Traiteur événementiel</div>
+        <p class="desc">Menus sur mesure pour mariages et cérémonies.</p>
+        <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/REMPLACE_PAR_LE_NUMERO?text=Bonjour%20A%C3%AFcha%2C%20je%20vous%20contacte%20via%20Artizo">Contacter sur WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="rejoindre" id="rejoindre">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Devenir artisan</span>
+      <h2>Rejoins l'annuaire, gratuitement</h2>
+      <p>Envoie ces quatre informations par WhatsApp et ta fiche sera publiée sous 24h : ton métier, ta ville, tes tarifs indicatifs, une photo de toi ou de ton travail.</p>
+    </div>
+    <div class="rejoindre-box">
+      <p>Aucune inscription compliquée, aucun frais. Tu commences à recevoir des clients dès que ta fiche est en ligne.</p>
+      <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/REMPLACE_PAR_LE_NUMERO?text=Bonjour%2C%20je%20souhaite%20inscrire%20mon%20activit%C3%A9%20sur%20Artizo">M'inscrire sur WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <div>© 2026 Artizo — Fait pour connecter les artisans et leurs clients.</div>
+    <div>Basé à Abidjan · en expansion</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('burger').addEventListener('click', function(){
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>
