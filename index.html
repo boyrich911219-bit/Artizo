@@ -12,7 +12,7 @@
      CONFIGURATION — à modifier par Richard avant la mise en ligne
      ==================================================================== */
   :root{
-    --whatsapp-number: "22872421108"; /* remplace par ton vrai numéro WhatsApp, format international sans + ni espace */
+    --whatsapp-number: "22500000000"; /* remplace par ton vrai numéro WhatsApp, format international sans + ni espace */
     --ville: "Abidjan"; /* remplace par ta ville de lancement */
 
     /* Palette */
@@ -199,6 +199,27 @@
   }
   .rejoindre-box p{ margin:0; max-width: 42ch; color: #DCE4E8; }
 
+  .form-inscription{
+    background: rgba(245,239,227,.06);
+    border: 1px solid rgba(245,239,227,.16);
+    padding: 34px;
+    max-width: 560px;
+  }
+  .form-row{ margin-bottom: 18px; display:flex; flex-direction:column; gap: 6px; }
+  .form-row label{ font-size: .9rem; color: #C3D0D8; font-weight:600; }
+  .form-row input{
+    padding: 12px 14px;
+    border: 1px solid rgba(245,239,227,.3);
+    background: rgba(255,255,255,.04);
+    color: var(--sable);
+    border-radius: 4px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 1rem;
+  }
+  .form-row input::placeholder{ color: rgba(245,239,227,.4); }
+  .form-message{ margin-top: 14px; font-size: .92rem; color: var(--or); min-height: 1.2em; }
+  #f-submit:disabled{ opacity: .6; cursor: not-allowed; }
+
   footer{ padding: 40px 0; border-top: 1px solid var(--sable-fonce); }
   .footer-row{ display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap: 14px; color: var(--encre-clair); font-size: .9rem; }
 </style>
@@ -306,30 +327,10 @@
     <div class="section-head">
       <span class="kicker">Artisans en vedette</span>
       <h2>Ils sont déjà sur Artizo</h2>
-      <p>Exemples de fiches — remplace-les par tes premiers artisans inscrits.</p>
+      <p>Liste mise à jour automatiquement dès qu'un artisan s'inscrit.</p>
     </div>
-    <div class="cartes">
-      <div class="carte">
-        <div class="avatar">FK</div>
-        <h4>Fatou Koné</h4>
-        <div class="role">Coiffeuse à domicile</div>
-        <p class="desc">6 ans d'expérience, spécialiste tresses et soins naturels.</p>
-        <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/22872421108?text=Bonjour%20Fatou%2C%20je%20vous%20contacte%20via%20Artizo">Contacter sur WhatsApp</a>
-      </div>
-      <div class="carte">
-        <div class="avatar">IS</div>
-        <h4>Ibrahim Sawadogo</h4>
-        <div class="role">Plombier</div>
-        <p class="desc">Interventions rapides, devis gratuit avant travaux.</p>
-        <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/22872421108?text=Bonjour%20Ibrahim%2C%20je%20vous%20contacte%20via%20Artizo">Contacter sur WhatsApp</a>
-      </div>
-      <div class="carte">
-        <div class="avatar">AD</div>
-        <h4>Aïcha Diallo</h4>
-        <div class="role">Traiteur événementiel</div>
-        <p class="desc">Menus sur mesure pour mariages et cérémonies.</p>
-        <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/22872421108?text=Bonjour%20A%C3%AFcha%2C%20je%20vous%20contacte%20via%20Artizo">Contacter sur WhatsApp</a>
-      </div>
+    <div class="cartes" id="cartes-container">
+      <p id="cartes-loading" style="color: var(--encre-clair);">Chargement des artisans…</p>
     </div>
   </div>
 </section>
@@ -339,12 +340,28 @@
     <div class="section-head">
       <span class="kicker">Devenir artisan</span>
       <h2>Rejoins l'annuaire, gratuitement</h2>
-      <p>Envoie ces quatre informations par WhatsApp et ta fiche sera publiée sous 24h : ton métier, ta ville, tes tarifs indicatifs, une photo de toi ou de ton travail.</p>
+      <p>Remplis ce formulaire — ta fiche apparaît automatiquement dans l'annuaire, sans attendre.</p>
     </div>
-    <div class="rejoindre-box">
-      <p>Aucune inscription compliquée, aucun frais. Tu commences à recevoir des clients dès que ta fiche est en ligne.</p>
-      <a class="btn btn-or" target="_blank" rel="noopener" href="https://wa.me/22872421108?text=Bonjour%2C%20je%20souhaite%20inscrire%20mon%20activit%C3%A9%20sur%20Artizo">M'inscrire sur WhatsApp</a>
-    </div>
+    <form id="form-inscription" class="form-inscription">
+      <div class="form-row">
+        <label for="f-nom">Nom complet</label>
+        <input type="text" id="f-nom" required placeholder="Ex : Fatou Koné">
+      </div>
+      <div class="form-row">
+        <label for="f-metier">Métier</label>
+        <input type="text" id="f-metier" required placeholder="Ex : Coiffeuse à domicile">
+      </div>
+      <div class="form-row">
+        <label for="f-desc">Courte description</label>
+        <input type="text" id="f-desc" required placeholder="Ex : 6 ans d'expérience, tresses et soins naturels">
+      </div>
+      <div class="form-row">
+        <label for="f-numero">Numéro WhatsApp</label>
+        <input type="text" id="f-numero" required placeholder="Ex : 22870000000 (format international, sans +)">
+      </div>
+      <button type="submit" class="btn btn-or" id="f-submit">Publier ma fiche</button>
+      <p id="f-message" class="form-message"></p>
+    </form>
   </div>
 </section>
 
@@ -358,6 +375,109 @@
 <script>
   document.getElementById('burger').addEventListener('click', function(){
     document.getElementById('navLinks').classList.toggle('open');
+  });
+</script>
+
+<!-- ====================================================================
+     BASE DE DONNÉES GRATUITE (Firebase) — Richard doit coller sa
+     configuration ci-dessous. Voir les instructions fournies pour
+     créer un projet Firebase gratuit et récupérer ces valeurs.
+     ==================================================================== -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPAg3mzTN5PMwa3wpLc30s8LOBd2HTF_w",
+    authDomain: "artizo-2a98f.firebaseapp.com",
+    projectId: "artizo-2a98f",
+    storageBucket: "artizo-2a98f.firebasestorage.app",
+    messagingSenderId: "1061995625388",
+    appId: "1:1061995625388:web:f27bc1f1017c1ec16bd809"
+  };
+
+  let db = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  } catch (e) {
+    console.warn("Firebase non configuré pour le moment.", e);
+  }
+
+  function creerCarteHTML(artisan){
+    const initiales = artisan.nom.split(' ').map(function(mot){ return mot[0]; }).join('').substring(0,2).toUpperCase();
+    const numeroPropre = (artisan.numero || '').replace(/[^0-9]/g, '');
+    const messageWa = encodeURIComponent('Bonjour ' + artisan.nom.split(' ')[0] + ', je vous contacte via Artizo');
+    const div = document.createElement('div');
+    div.className = 'carte';
+    div.innerHTML =
+      '<div class="avatar">' + initiales + '</div>' +
+      '<h4></h4>' +
+      '<div class="role"></div>' +
+      '<p class="desc"></p>' +
+      '<a class="btn btn-or" target="_blank" rel="noopener">Contacter sur WhatsApp</a>';
+    div.querySelector('h4').textContent = artisan.nom;
+    div.querySelector('.role').textContent = artisan.metier;
+    div.querySelector('.desc').textContent = artisan.description;
+    div.querySelector('a').href = 'https://wa.me/' + numeroPropre + '?text=' + messageWa;
+    return div;
+  }
+
+  function chargerArtisans(){
+    const container = document.getElementById('cartes-container');
+    if (!db) {
+      container.innerHTML = '<p style="color: var(--encre-clair);">La base de données n\'est pas encore configurée.</p>';
+      return;
+    }
+    db.collection('artisans').orderBy('creeLe', 'desc').get().then(function(snapshot){
+      container.innerHTML = '';
+      if (snapshot.empty) {
+        container.innerHTML = '<p style="color: var(--encre-clair);">Aucun artisan inscrit pour le moment — sois le premier !</p>';
+        return;
+      }
+      snapshot.forEach(function(doc){
+        container.appendChild(creerCarteHTML(doc.data()));
+      });
+    }).catch(function(err){
+      container.innerHTML = '<p style="color: var(--encre-clair);">Impossible de charger les artisans pour le moment.</p>';
+      console.error(err);
+    });
+  }
+
+  chargerArtisans();
+
+  document.getElementById('form-inscription').addEventListener('submit', function(e){
+    e.preventDefault();
+    const bouton = document.getElementById('f-submit');
+    const message = document.getElementById('f-message');
+
+    if (!db) {
+      message.textContent = "La base de données n'est pas encore configurée. Contacte l'administrateur du site.";
+      return;
+    }
+
+    const artisan = {
+      nom: document.getElementById('f-nom').value.trim(),
+      metier: document.getElementById('f-metier').value.trim(),
+      description: document.getElementById('f-desc').value.trim(),
+      numero: document.getElementById('f-numero').value.trim(),
+      creeLe: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    bouton.disabled = true;
+    bouton.textContent = 'Publication en cours…';
+
+    db.collection('artisans').add(artisan).then(function(){
+      message.textContent = 'Ta fiche est publiée ! Elle apparaît dans la liste ci-dessus.';
+      document.getElementById('form-inscription').reset();
+      chargerArtisans();
+      document.getElementById('artisans').scrollIntoView({ behavior: 'smooth' });
+    }).catch(function(err){
+      message.textContent = "Une erreur est survenue, réessaie dans quelques instants.";
+      console.error(err);
+    }).finally(function(){
+      bouton.disabled = false;
+      bouton.textContent = 'Publier ma fiche';
+    });
   });
 </script>
 
