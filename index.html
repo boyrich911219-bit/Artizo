@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Artizo — Trouve un artisan de confiance près de chez toi</title>
 <meta name="description" content="Artizo connecte les clients aux plombiers, coiffeuses, mécaniciens et autres artisans de confiance de ton quartier, directement sur WhatsApp.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#132A3A">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Artizo">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -376,6 +383,14 @@
   document.getElementById('burger').addEventListener('click', function(){
     document.getElementById('navLinks').classList.toggle('open');
   });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(err){
+        console.warn('Service worker non enregistré :', err);
+      });
+    });
+  }
 </script>
 
 <!-- ====================================================================
