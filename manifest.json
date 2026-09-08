@@ -1,0 +1,25 @@
+{
+  "name": "Artizo — Trouve un artisan de confiance",
+  "short_name": "Artizo",
+  "description": "Annuaire local d'artisans avec réservation directe sur WhatsApp",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F5EFE3",
+  "theme_color": "#132A3A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
